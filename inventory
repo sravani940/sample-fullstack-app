@@ -1,9 +1,9 @@
 ; -*-mode: ansible; coding: utf-8;-*-
 
 
-[nginx]
+[webservers]
 
-nginx_server     ansible_host=44.196.57.90     ansible_port=22     ansible_user=ubuntu     ansible_ssh_private_key_file="/home/ubuntu/master.pem"
+fullstack-app     ansible_host=44.196.57.90     ansible_port=22     ansible_user=ubuntu     ansible_ssh_private_key_file="/home/ubuntu/master.pem"
 
 
 [all:vars]
