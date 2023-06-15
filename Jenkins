@@ -1,0 +1,43 @@
+pipeline {
+    agent {
+        node {
+            label 't058-runner'
+        }
+  }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                cleanWs()
+                git credentialsId: 'ca-git-access', branch: 'develop', url: "https://git.cloudavise.com/visops/t058/sample-fullstack-app.git"
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh 'ansible-vault decrypt --vault-id /tmp/pem-id master.pem'
+                sh 'chmod 400 master.pem'
+                sh 'ansible-playbook -i inventory fullstack-deploy.yml'
+            }
+        }
+	
+    post {
+        always {
+            script {
+                userInput = input(
+                    id: 'userConfirmation',
+                    message: 'Confirm to proceed with Docker cleanup',
+                    parameters: [
+                        [$class: 'BooleanParameterDefinition', defaultValue: false, description: '', name: 'PROCEED']
+                    ]
+                )
+                if (userInput.PROCEED) {
+                    sh 'docker-compose down'
+                }
+            }
+        }
+    }
+}
+
+}
+
